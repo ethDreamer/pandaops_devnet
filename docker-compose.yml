@@ -1,0 +1,65 @@
+services:
+  beacon:
+    image: ${LIGHTHOUSE_IMAGE}
+    restart: unless-stopped
+    environment:
+      - CONSENSUS_DISC
+      - TESTNET
+      - CHECKPOINT_SYNC_URL
+      - CONSENSUS_BOOTNODES
+    ports:
+      - "${CONSENSUS_DISC}:${CONSENSUS_DISC}/tcp"
+      - "${CONSENSUS_DISC}:${CONSENSUS_DISC}/udp"
+      - "127.0.0.1:${BEACON_HTTP}:5052"
+      - "127.0.0.1:${BEACON_METRICS}:5054"
+    volumes:
+      - ./lighthouse/beacon/run:/data
+      - ./execution-auth.jwt:/execution-auth.jwt
+      - ./${NETWORK_CONFIG}:/network-config
+    depends_on:
+      - execution
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["/data/execute.sh"]
+
+  execution:
+    image: ${EXECUTION_IMAGE}
+    restart: unless-stopped
+    environment:
+      - TESTNET
+      - EXECUTION_DISC
+      - EXECUTION_BOOTNODES
+    ports:
+      - "${EXECUTION_DISC}:${EXECUTION_DISC}/tcp"
+      - "${EXECUTION_DISC}:${EXECUTION_DISC}/udp"
+      - "127.0.0.1:${RPC_PORT}:8545"
+      - "127.0.0.1:${EXECUTION_METRICS}:6060"
+    volumes:
+      - ./${EXECUTION_NODE}/run:/data
+      - ./execution-auth.jwt:/execution-auth.jwt
+      - ./${NETWORK_CONFIG}:/network-config
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["/data/execute.sh"]
+
+  prometheus:
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    volumes:
+      - ./prometheus/data:/prometheus
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      - beacon
+
+  grafana:
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./grafana/data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
