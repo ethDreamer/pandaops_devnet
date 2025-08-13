@@ -1,5 +1,5 @@
 [submodule "fusaka-devnets"]
 	path = fusaka-devnets
-	url = git@github.com:ethpandaops/fusaka-devnets.git
+	url = https://github.com/ethpandaops/fusaka-devnets.git
 	branch = master
 	shallow = true
