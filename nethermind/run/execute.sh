@@ -1,6 +1,8 @@
 #!/bin/bash
 
-/nethermind/nethermind \
+set -Eeuo pipefail
+
+exec /nethermind/nethermind \
     --datadir=/data/${TESTNET} \
     --Network.P2PPort=${EXECUTION_DISC} \
     --Network.DiscoveryPort=${EXECUTION_DISC} \

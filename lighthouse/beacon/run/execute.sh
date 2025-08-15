@@ -1,7 +1,8 @@
 #!/bin/bash
 
+set -Eeuo pipefail
 
-lighthouse beacon_node \
+exec lighthouse beacon_node \
     --datadir=/data/$TESTNET \
     --testnet-dir=/network-config \
     --checkpoint-sync-url=${CHECKPOINT_SYNC_URL} \

@@ -18,8 +18,7 @@ services:
       - ./${NETWORK_CONFIG}:/network-config
     depends_on:
       - execution
-    entrypoint: ["/bin/sh", "-c"]
-    command: ["/data/execute.sh"]
+    entrypoint: ["/data/execute.sh"]
 
   execution:
     image: ${EXECUTION_IMAGE}
@@ -37,8 +36,7 @@ services:
       - ./${EXECUTION_NODE}/run:/data
       - ./execution-auth.jwt:/execution-auth.jwt
       - ./${NETWORK_CONFIG}:/network-config
-    entrypoint: ["/bin/sh", "-c"]
-    command: ["/data/execute.sh"]
+    entrypoint: ["/data/execute.sh"]
 
   prometheus:
     image: prom/prometheus:latest
